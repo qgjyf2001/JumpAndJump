@@ -17,7 +17,7 @@ struct  pos
     {}
     int x, y;
 };
-COLORREF tmpColor;
+COLORREF tmpColor,tmpColor1;
 template <typename T>
 auto count(std::vector<T> input)
 {
@@ -111,31 +111,21 @@ int getBoxYpos(int width,int y)//扫描分析
 }
 int getBoxXPos(int width,int height,int y,int maxY)
 {        
-    int maxn = 0;
+    vector<pair<int, int>> total;
     for (int i = 0; i <= width; i++)
         if (maps[i][y] == tmpColor)
         {
 
-            int temp=0,check=0;
+            int temp=0;
             for (int j = 0; j < maxY; j++)
                 if (maps[i][j] == tmpColor)
-                    temp++, check = 1;
-                else
-                    if (check == 1)
-                        break;
-          //  if (temp > 0)
-            //    printf("%d\n", temp);
-            if (temp > 40)
-            {
-                if (temp >=maxn)
-                    maxn = temp;
-                else
-                {
-                    printf("%d", i);
-                    return i;
-                }
-            }
+                    temp++;
+            total.push_back(move(make_pair(temp, i)));
     }
+    return max_element(total.begin(), total.end(), [](auto x, auto y)
+        {
+            return x.first < y.first;
+        })->second;
 }
 int main()
 {
@@ -169,8 +159,7 @@ int main()
         auto next = pos(xPos, yPos);
         debug(dc, next.x, next.y);
         SendMessage(window, WM_LBUTTONDOWN, 0, MAKELPARAM(100, 100));
-        Sleep((float)distance(next, p) * 3.27);
-        printf("%d", distance(next, p));
+        Sleep((float)distance(next, p) * 3.27);     
         SendMessage(window, WM_LBUTTONUP, 0, MAKELPARAM(100, 100));
         Sleep(2000);
     }
